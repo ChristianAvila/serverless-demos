@@ -33,7 +33,7 @@ namespace Sample.Controllers
             logger.LogInformation($"Saving blog with id {blog.Id}");
 
             await context.SaveAsync<Blog>(blog);
-            return Created("GetBlog", blog);
+            return CreatedAtRoute("GetBlog", blog);
         }
 
         [HttpGet]
