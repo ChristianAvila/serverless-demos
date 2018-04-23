@@ -18,5 +18,6 @@ resource "aws_dynamodb_table" "demo-scores-terraform" {
   tags {
     Name        = "demo-scores-terraform"
     Environment = "demo"
+    DemoTag     = "this is a demo tag"
   }
 }
