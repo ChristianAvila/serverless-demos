@@ -1,0 +1,54 @@
+service: serverless-dynamodb
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+provider:
+  name: aws
+  stage: ${self:custom.stage}
+  region: us-west-2
+
+custom:
+  stage: ${opt:env}
+  config:
+    stg:
+      table_name: serverless-table-stg
+      read_capacity_units: 2
+      write_capacity_units: 2
+    prd:
+      table_name: serverless-table-prd
+      read_capacity_units: 5
+      write_capacity_units: 5
+
+resources:
+  Resources:
+    DynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.config.${self:custom.stage}.table_name}
+        AttributeDefinitions:
+        - AttributeName: UserId
+          AttributeType: S
+        - AttributeName: Game
+          AttributeType: S
+        KeySchema:
+        - AttributeName: UserId
+          KeyType: HASH
+        - AttributeName: Game
+          KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: ${self:custom.config.${self:custom.stage}.read_capacity_units}
+          WriteCapacityUnits: ${self:custom.config.${self:custom.stage}.write_capacity_units}
+        Tags:
+        - Key: Name
+          Value: ${self:custom.config.${self:custom.stage}.table_name}
+        - Key: Environment
+          Value: ${self:custom.stage}
+  Outputs:
+    DynamoDBTableArn:
+      Description: DynamoDB ARN
+      Value:
+        Fn::GetAtt:
+        - DynamoDbTable
+        - Arn
+      Export:
+        Name: DynamoDBTableArn-${self:custom.stage}

@@ -1,0 +1,10 @@
+[
+  {
+      "ParameterKey": "TableName",
+      "ParameterValue": "cloudformation-stg"
+  },
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "Stage"
+}
+]

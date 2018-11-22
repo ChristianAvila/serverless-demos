@@ -1,0 +1,10 @@
+[
+    {
+        "ParameterKey": "TableName",
+        "ParameterValue": "cloudformation-prd"
+    },
+    {
+      "ParameterKey": "Environment",
+      "ParameterValue": "Production"
+  }
+]

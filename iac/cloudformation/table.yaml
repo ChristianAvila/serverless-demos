@@ -1,50 +1,73 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "This example consist to create a new DynamoDB table with an string key"
+Description: This example consist to create a new DynamoDB table with an string key
 
 Metadata:
   Comments:
-    ScoreTable: "Score tables"
+    ScoreTable: Create Tables with Cloudformation tables
+
 Parameters:
   TableName:
-    Description: "Table name"
+    Description: Table name
+    Type: String
+  Environment:
+    Description: Environment to deploy
     Type: String
 
-# Mappings:
-#   set of mappings
-
-# Conditions:
-#   set of conditions
-
-# Transform:
-#   set of transforms
+Conditions:
+  IsProductionEnvironment:
+    Fn::Equals:
+    - ${self:custom.stage}
+    - prd
+Mappings:
+  Environment:
+    Production:
+      ReadCapacityUnits: 2
+      WriteCapacityUnits: 2
+    Stage:
+      ReadCapacityUnits: 2
+      WriteCapacityUnits: 2
 
 Resources:
-  ScoreTable:
-    Type: "AWS::DynamoDB::Table"
+  DynamoDbTable:
+    Type: AWS::DynamoDB::Table
     Properties:
       TableName: !Ref TableName
       AttributeDefinitions:
-        -
-          AttributeName: "UserId"
-          AttributeType: "S"
-        -
-          AttributeName: "Game"
-          AttributeType: "S"
+      - AttributeName: UserId
+        AttributeType: S
+      - AttributeName: Game
+        AttributeType: S
       KeySchema:
-        -
-          AttributeName: "UserId"
-          KeyType: "HASH"
-        -
-          AttributeName: "Game"
-          KeyType: "RANGE"
+      - AttributeName: UserId
+        KeyType: HASH
+      - AttributeName: Game
+        KeyType: RANGE
       ProvisionedThroughput:
-        ReadCapacityUnits: 2
-        WriteCapacityUnits: 2
+        ReadCapacityUnits:
+          Fn::FindInMap:
+          - Environment
+          - Ref: Environment
+          - ReadCapacityUnits
+        WriteCapacityUnits:
+          Fn::FindInMap:
+          - Environment
+          - Ref: Environment
+          - WriteCapacityUnits
       Tags:
-        -
-          Key: "Name"
-          Value: "demo-scores-cloudformation"
-        -
-          Key: "Environment"
-          Value: "demo"
+      - Key: Name
+        Value:
+          Ref: TableName
+      - Key: Environment
+        Value:
+          Ref: Environment
+
+Outputs:
+  DynamoDBTableArn:
+    Description: DynamoDB ARN
+    Value:
+      Fn::GetAtt:
+      - DynamoDbTable
+      - Arn
+    Export:
+      Name: !Sub 'DynamoDBTableArn-${Environment}'
