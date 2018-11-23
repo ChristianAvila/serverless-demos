@@ -61,6 +61,8 @@ Resources:
       - Key: Environment
         Value:
           Ref: Environment
+      - Key: Demo
+        Value: Tech Talk GBM
 
 Outputs:
   DynamoDBTableArn:
